@@ -6,7 +6,7 @@ object swingUtils {
   val emptyInsets = new Insets(0, 0, 0, 0)
   val standardInsets = new Insets(4, 4, 4, 4)
 
-  def drawString(g: Graphics2D, x: Float, y: Float, xAnchor: Float, yAnchor: Float, text: String,
+  def drawString(g: Graphics2D, x: Double, y: Double, xAnchor: Double, yAnchor: Double, text: String,
                  textColor: Color = null, borderColor: Color = null, backColor: Color = null,
                  insets: Insets = emptyInsets, ovalBorder: Boolean = false) = {
     val b = g.getFontMetrics.getStringBounds(text, g)

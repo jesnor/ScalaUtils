@@ -4,10 +4,10 @@ import java.awt.{Color, Toolkit}
 
 import javax.swing.UIManager
 import javax.swing.border.{CompoundBorder, EmptyBorder, LineBorder, MatteBorder}
-import scala_utils.math.Point_2
+import scala_utils.math.{Point_2, Point_2F}
 
 import scala.swing.event.{ButtonClicked, ValueChanged}
-import scala.swing.{Action, Alignment, BorderPanel, BoxPanel, Button, CheckBox, Component, Dimension, FlowPanel, Graphics2D, GridBagPanel, Label, MainFrame, Orientation, Point, Slider, ToggleButton}
+import scala.swing.{Action, Alignment, BorderPanel, BoxPanel, Button, CheckBox, Component, Dimension, FlowPanel, Graphics2D, GridBagPanel, Label, MainFrame, Orientation, Panel, Point, Slider, ToggleButton}
 
 object utils {
   val title_border = new CompoundBorder (new MatteBorder (0, 0, 1, 0, Color.BLACK), new EmptyBorder (2, 4, 2, 4))
@@ -58,6 +58,11 @@ object utils {
 
   def box (o : Orientation.Value, children : Component*) = new BoxPanel (o) {
     contents.appendAll (children)
+  }
+
+  def aspect_ratio_panel (aspect : Float, pos_weight : Point_2F, child : Component) = new Panel {
+    peer.add (child.peer)
+    peer.setLayout (new Aspect_ratio_layout (aspect, pos_weight))
   }
 
   def vbox (children : Component*) = box (Orientation.Vertical, children : _*)
