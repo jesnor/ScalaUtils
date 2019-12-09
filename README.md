@@ -1,0 +1,2 @@
+# ScalaUtils
+Misc Scala utilities
