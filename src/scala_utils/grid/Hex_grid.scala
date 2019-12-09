@@ -1,16 +1,17 @@
 package scala_utils.grid
 
-import scala_utils.math.Point_2._
 import scala_utils.math.{Point_2, Point_2I, Range_2}
 
 import scala.collection.mutable.ArrayBuffer
 
-class Square_grid [T] (val size : Point_2I, use_manhattan_distance : Boolean, f : Point_2I => T)
-    extends Grid [Point_2I, T] {
+class Hex_grid [T] (val size : Point_2I, f : Point_2I => T) extends Grid [Point_2I, T] {
   private val _cells = ArrayBuffer.tabulate (size.area)(i => f (Point_2 (i % size.x, i / size.x)))
 
-  override def distance (p1 : Point_2I, p2 : Point_2I) =
-    if (use_manhattan_distance) p1 manhattan_distance p2 else p1 max_xy_distance  p2
+  override def distance (p1 : Point_2I, p2 : Point_2I) = {
+    val row_diff = (p1.y & 1) * 2 - 1
+    val d = (p2 - p1).add_x (row_diff).abs
+    d.y + (d.x - d.y).max (0)
+  }
 
   override def apply (p : Point_2I) =
     if (Range_2 (Point_2I.zero, size)(p))
@@ -23,6 +24,6 @@ class Square_grid [T] (val size : Point_2I, use_manhattan_distance : Boolean, f 
   override def positions = size.row_major_points
 }
 
-case class Square_grid_factory (size : Point_2I, use_manhattan_distance : Boolean) extends Grid_factory [Point_2I] {
-  override def apply [T] (f : Point_2I => T) = new Square_grid [T](size, use_manhattan_distance, f)
+case class Hex_grid_factory (size : Point_2I) extends Grid_factory [Point_2I] {
+  override def apply [T] (f : Point_2I => T) = new Hex_grid [T](size, f)
 }

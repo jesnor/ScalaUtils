@@ -1,6 +1,11 @@
 package scala_utils
 
 package object math {
+  type Point_2I = Point_2 [Int]
+  type Point_2F = Point_2 [Float]
+  type Range_2I = Range_2 [Int]
+  type Range_2F = Range_2 [Float]
+
   def interpolate (f : Double, a : Double, b : Double) = (1 - f) * a + f * b
   def sinc (f : Double) = if (f == 0) 1.0 else Math.sin (f) / f
   def sinc_normalized (f : Double) = sinc (Math.PI * f)

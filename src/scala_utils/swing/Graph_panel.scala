@@ -2,14 +2,16 @@ package scala_utils.swing
 
 import java.awt.Color
 
+import scala_utils.math.Arithmetic._
 import scala_utils.math.Point_2._
-import scala_utils.math.{Point_2, Point_2f, Point_2i}
+import scala_utils.math.{Point_2, Point_2F}
 import scala_utils.swing.utils._
 
+import scala.Numeric._
 import scala.swing.{Graphics2D, Panel}
 
 class Graph_panel extends Panel {
-  type Data_point = Point_2 [Float]
+  type Data_point = Point_2F
 
   trait Data_set {
     def data : Iterable [Data_point]
@@ -21,9 +23,8 @@ class Graph_panel extends Panel {
   }
 
   private var data_sets : Iterable [Data_set] = Iterable.empty
-  private var inset = 4
-  private var min_step = 1
-  private var data_window : (Data_point, Data_point) = (Point_2f.zero, Point_2f.zero)
+  private val inset = 4
+  private var data_window : (Data_point, Data_point) = (Point_2F.zero, Point_2F.zero)
 
   override protected def paintComponent (g : Graphics2D) : Unit = {
     super.paintComponent (g)
@@ -38,7 +39,7 @@ class Graph_panel extends Panel {
         val a = size.to_point - inset * 2
         val c = (p - data_window._1) / (data_window._2 - data_window._1)
         val b = (c * a.to_float).to_int
-        Point_2i (inset) + Point_2i (b.x, a.y - b.y)
+        Point_2 (inset) + Point_2 (b.x, a.y - b.y)
       }
 
       var lsp = to_screen (head)

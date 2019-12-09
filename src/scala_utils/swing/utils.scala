@@ -4,7 +4,7 @@ import java.awt.{Color, Toolkit}
 
 import javax.swing.UIManager
 import javax.swing.border.{CompoundBorder, EmptyBorder, LineBorder, MatteBorder}
-import scala_utils.math.Point_2i
+import scala_utils.math.Point_2
 
 import scala.swing.event.{ButtonClicked, ValueChanged}
 import scala.swing.{Action, Alignment, BorderPanel, BoxPanel, Button, CheckBox, Component, Dimension, FlowPanel, Graphics2D, GridBagPanel, Label, MainFrame, Orientation, Point, Slider, ToggleButton}
@@ -99,7 +99,7 @@ object utils {
   def titled_panel (title : String, center : Component) : Component = titled_panel (label (title), center)
 
   case class Dimension_ops (d : Dimension) extends AnyVal {
-    def to_point = Point_2i (d.width, d.height)
+    def to_point = Point_2 (d.width, d.height)
   }
 
   implicit def dimension_ops (d : Dimension) : Dimension_ops = Dimension_ops (d)

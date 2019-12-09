@@ -2,8 +2,6 @@ package scala_utils.utils
 
 import java.lang.ref.WeakReference
 
-import scala_utils.utils.utils.Of
-
 class Protected_weak_set [T] {
   private var entries : Any = null
 
