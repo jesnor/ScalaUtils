@@ -1,7 +1,7 @@
 package scala_utils.grid
 
 import scala_utils.math.Point_2._
-import scala_utils.math.{Point_2, Point_2I, Range_2}
+import scala_utils.math.{Point_2, Point_2I, Range}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -13,7 +13,7 @@ class Square_grid [T] (val size : Point_2I, use_manhattan_distance : Boolean, f 
     if (use_manhattan_distance) p1 manhattan_distance p2 else p1 max_xy_distance  p2
 
   override def apply (p : Point_2I) =
-    if (Range_2 (Point_2I.zero, size)(p))
+    if (Range (Point_2I.zero, size)(p))
       None
     else
       Option (unsafe_get (p))

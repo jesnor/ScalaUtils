@@ -3,18 +3,19 @@ package scala_utils.swing
 import java.awt.event.{InputEvent, MouseEvent, MouseListener, MouseMotionListener}
 import java.awt.{BasicStroke, Color, Point, RenderingHints}
 
+import scala_utils.math.Range_double
+
 import scala.swing.{Dimension, Graphics2D, Panel}
 
-class Knob (var min : Double,
-            var max : Double,
+class Knob (var range : Range_double,
             var value : Double,
             val action : Double => Unit,
             var exp : Double = 1,
             var start_angle : Double = Math.PI * 5 / 4,
             var end_angle : Double = -Math.PI / 4
            ) extends Panel with MouseListener with MouseMotionListener {
-  def to_gui (v : Double) = Math.pow ((v - min) / (max - min), 1.0 / exp)
-  def to_value (v : Double) = (Math.pow (v.max (0).min (1), exp) * (max - min) + min).min (max).max (min)
+  def to_gui (v : Double) = Math.pow ((v - range.min) / range.size, 1.0 / exp)
+  def to_value (v : Double) = range.clamp (Math.pow (v.max (0).min (1), exp) * range.size + range.min)
   def to_angle (v : Double) = to_gui (v) * (end_angle - start_angle) + start_angle
 
   var default_value = value
@@ -59,8 +60,8 @@ class Knob (var min : Double,
         draw_marker (1, max)
     */
     g setColor foreground
-    draw_marker (mr, 0, min)
-    draw_marker (mr, 0, max)
+    draw_marker (mr, 0, range.min)
+    draw_marker (mr, 0, range.max)
 
     g setColor knob_color
     g.fillOval (cx - or, cy - or, or * 2, or * 2)

@@ -4,7 +4,7 @@ import java.awt.{Color, Toolkit}
 
 import javax.swing.UIManager
 import javax.swing.border.{CompoundBorder, EmptyBorder, LineBorder, MatteBorder}
-import scala_utils.math.{Point_2, Point_2F}
+import scala_utils.math.{Point_2, Point_2F, Range_double}
 
 import scala.swing.event.{ButtonClicked, ValueChanged}
 import scala.swing.{Action, Alignment, BorderPanel, BoxPanel, Button, CheckBox, Component, Dimension, FlowPanel, Graphics2D, GridBagPanel, Label, MainFrame, Orientation, Panel, Point, Slider, ToggleButton}
@@ -60,6 +60,10 @@ object utils {
     contents.appendAll (children)
   }
 
+  def boxs (o : Orientation.Value, children : IterableOnce [Component]) = new BoxPanel (o) {
+    contents.appendAll (children)
+  }
+
   def aspect_ratio_panel (aspect : Float, pos_weight : Point_2F, child : Component) = new Panel {
     peer.add (child.peer)
     peer.setLayout (new Aspect_ratio_layout (aspect, pos_weight))
@@ -67,10 +71,14 @@ object utils {
 
   def vbox (children : Component*) = box (Orientation.Vertical, children : _*)
   def hbox (children : Component*) = box (Orientation.Horizontal, children : _*)
-  def vboxs (children : Seq [Component]) = box (Orientation.Vertical, children : _*)
-  def hboxs (children : Seq [Component]) = box (Orientation.Horizontal, children : _*)
+  def vboxs (children : IterableOnce [Component]) = boxs (Orientation.Vertical, children)
+  def hboxs (children : IterableOnce [Component]) = boxs (Orientation.Horizontal, children)
 
   def flow_panel (children : Component*) = new FlowPanel {
+    contents.appendAll (children)
+  }
+
+  def flow_panel_s (children : IterableOnce [Component]) = new FlowPanel {
     contents.appendAll (children)
   }
 
@@ -83,12 +91,12 @@ object utils {
     location = new Point (((dimension.getWidth - s.width) / 2).toInt, ((dimension.getHeight - s.height) / 2).toInt)
   }
 
-  def top_center_panel (top : Component, center : Component) = new BorderPanel {
+  def top_center_panel (top : Component, center : Component) : Panel = new BorderPanel {
     add (top, BorderPanel.Position.North)
     add (center, BorderPanel.Position.Center)
   }
 
-  def titled_panel (top : Component, center : Component) : Component = {
+  def titled_panel (top : Component, center : Component) : Panel = {
     set_bold (top)
 
     val p = top_center_panel (new BorderPanel {
@@ -101,7 +109,7 @@ object utils {
     p
   }
 
-  def titled_panel (title : String, center : Component) : Component = titled_panel (label (title), center)
+  def titled_panel (title : String, center : Component) : Panel = titled_panel (label (title), center)
 
   case class Dimension_ops (d : Dimension) extends AnyVal {
     def to_point = Point_2 (d.width, d.height)
@@ -131,8 +139,7 @@ object utils {
   }
 
   def knob_with_labels (title : String,
-                        min : Double,
-                        max : Double,
+                        range : Range_double,
                         value : Double,
                         action : Double => Unit,
                         exp : Double = 1,
@@ -140,7 +147,7 @@ object utils {
     val title_label = label (title)
     val value_label = label (to_string (value))
 
-    val knob = new Knob (min, max, value, v => {
+    val knob = new Knob (range, value, v => {
       value_label.text = to_string (v)
       action (v)
     }, exp)

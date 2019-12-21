@@ -6,8 +6,11 @@ package object math {
 
   type Point_2I = Point_2 [Int]
   type Point_2F = Point_2 [Float]
-  type Range_2I = Range_2 [Int]
-  type Range_2F = Range_2 [Float]
+  type Point_2D = Point_2 [Double]
+
+  type Range_int = Range [Int]
+  type Range_float = Range [Float]
+  type Range_double = Range [Double]
 
   def db_to_amp (db : Double) = scala.math.sqrt (scala.math.pow (10, db / 10))
 

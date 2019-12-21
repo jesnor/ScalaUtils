@@ -1,6 +1,6 @@
 package scala_utils.grid
 
-import scala_utils.math.Range_2._
+import scala_utils.math.Range._
 import scala_utils.math.{Point_2, Point_2I}
 
 import scala.collection.mutable.ArrayBuffer
