@@ -1,10 +1,15 @@
 package scala_utils
 
 package object math {
+  val log2 = scala.math.log (2)
+  val log10_2 = scala.math.log10 (2)
+
   type Point_2I = Point_2 [Int]
   type Point_2F = Point_2 [Float]
   type Range_2I = Range_2 [Int]
   type Range_2F = Range_2 [Float]
+
+  def db_to_amp (db : Double) = scala.math.sqrt (scala.math.pow (10, db / 10))
 
   def interpolate (f : Double, a : Double, b : Double) = (1 - f) * a + f * b
   def sinc (f : Double) = if (f == 0) 1.0 else Math.sin (f) / f
