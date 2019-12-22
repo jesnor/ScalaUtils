@@ -2,10 +2,15 @@ package scala_utils.utils
 
 import java.lang.ref.WeakReference
 
+/**
+ * Memory efficient set for weak references
+ *
+ * Mainly used as base class for observables
+ */
 class Protected_weak_set [T] {
-  private var entries : Any = null
+  private var entries : Any = _
 
-  protected def add (value : T) : WeakReference [T] = {
+  protected def add (value : T) : T = {
     val w = new WeakReference (value)
 
     entries = entries match {
@@ -13,10 +18,11 @@ class Protected_weak_set [T] {
       case wr : WeakReference [T] => if (wr.get == null) w else Array (w, wr, null, null)
 
       case a : Array [WeakReference [T]] =>
-        for (i <- 0 until a.length) {
+        // Find empty entry
+        for (i <- a.indices) {
           if (a (i) == null || a (i).get == null) {
             a (i) = w
-            return w
+            return value
           }
         }
 
@@ -26,63 +32,76 @@ class Protected_weak_set [T] {
         newEntries
     }
 
-    w
+    value
   }
 
-  protected def remove (value : T) : Unit = {
-    entries = entries match {
-      case null => null
+  protected def remove (value : T) : Boolean = entries match {
+    case null =>
+      entries = null
+      false
 
-      case wr : WeakReference [T] => wr.get match {
-        case null | `value` => null
-        case _ => wr
-      }
+    case wr : WeakReference [T] => wr.get match {
+      case null =>
+        entries = null
+        false
 
-      case a : Array [WeakReference [T]] =>
-        var count = 0
-        var lastIndex = -1
+      case `value` =>
+        entries = null
+        true
 
-        for (i <- 0 until a.length) {
-          if (a (i) != null) {
-            val v = a (i).get
+      case _ =>
+        entries = wr
+        false
+    }
 
-            if (v == null || v == value)
-              a (i) = null
-            else {
-              count += 1
-              lastIndex = i
-            }
+    case a : Array [WeakReference [T]] =>
+      var count = 0
+      var lastIndex = -1
+      var rv = false
+
+      for (i <- a.indices) {
+        if (a (i) != null) {
+          val v = a (i).get
+
+          if (v == null || v == value) {
+            a (i) = null
+            rv ||= v == value
+          } else {
+            count += 1
+            lastIndex = i
           }
         }
+      }
 
-        count match {
-          case 0 => null
-          case 1 => a (lastIndex)
+      count match {
+        case 0 => entries = null
+        case 1 => entries = a (lastIndex)
 
-          case _ if count <= a.length / 4 =>
-            val newEntries = new Array [WeakReference [T]](a.length / 2)
+        case _ if count <= a.length / 4 =>
+          val newEntries = new Array [WeakReference [T]](a.length / 2)
 
-            if (lastIndex < newEntries.length)
-              System.arraycopy (a, 0, newEntries, 0, lastIndex + 1)
-            else {
-              var i = 0
-              var j = 0
+          if (lastIndex < newEntries.length)
+            System.arraycopy (a, 0, newEntries, 0, lastIndex + 1)
+          else {
+            var i = 0
+            var j = 0
 
-              while (i < a.length && j < count) {
-                if (a (i) != null && a (i).get != null) {
-                  newEntries (j) = a (i)
-                  j += 1
-                }
-
-                i += 1
+            while (i < a.length && j < count) {
+              if (a (i) != null && a (i).get != null) {
+                newEntries (j) = a (i)
+                j += 1
               }
+
+              i += 1
             }
+          }
 
-            newEntries
+          entries = newEntries
 
-          case _ => entries
-        }
-    }
+        case _ =>
+      }
+
+      rv
   }
 
   protected def foreach (action : T => Unit) : Unit = {
@@ -94,6 +113,7 @@ class Protected_weak_set [T] {
     }
 
     entries match {
+      case null =>
       case wr : WeakReference [T] => doWith (wr)
       case a : Array [WeakReference [T]] => a.foreach (doWith)
     }

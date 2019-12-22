@@ -1,9 +1,7 @@
 package scala_utils.grid
 
 import scala_utils.math.Range_int
-import scala_utils.utils.utils.Of
-
-import scala.Ordering._
+import scala_utils.utils.Of
 
 trait Grid [Pos, Cell] {
   def size : Pos

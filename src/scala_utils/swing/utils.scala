@@ -138,37 +138,6 @@ object utils {
     Seq (s, l)
   }
 
-  def knob_with_labels (title : String,
-                        range : Range_double,
-                        value : Double,
-                        action : Double => Unit,
-                        exp : Double = 1,
-                        to_string : Double => String = _.round.toString) = {
-    val title_label = label (title)
-    val value_label = label (to_string (value))
-
-    val knob = new Knob (range, value, v => {
-      value_label.text = to_string (v)
-      action (v)
-    }, exp)
-
-    val p = new GridBagPanel {
-      val c = new Constraints
-      add (title_label, c)
-      c.gridy = 1
-      add (knob, c)
-      c.gridy = 2
-      add (value_label, c)
-    }
-
-    /*    p.layout (title_label).grid = (0, 0)
-        p.layout (value_label).grid = (1, 0)
-        p.layout (knob).grid = (1, 0)
-        p.layout (knob).gridwidth = 2
-      */
-    p
-  }
-
   def draw_string (g : Graphics2D, text : String, x : Double, y : Double, anchor_x : Double = 0,
                    anchor_y : Double = 0) = {
     val b = g.getFontMetrics.getStringBounds (text, g)

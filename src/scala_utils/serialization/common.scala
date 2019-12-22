@@ -1,6 +1,6 @@
 package scala_utils.serialization
 
-import scala_utils.utils.utils.Of
+import scala_utils.utils.Of
 
 object common {
   implicit def boolean_writer [B] (implicit w : Writer [B, Byte]) = new Writer [B, Boolean] {

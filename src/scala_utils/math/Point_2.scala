@@ -1,6 +1,6 @@
 package scala_utils.math
 
-import scala_utils.utils.utils.Of
+import scala_utils.utils.Of
 
 case class Point_2 [@specialized (Int, Float, Double) T] (x : T, y : T)
 

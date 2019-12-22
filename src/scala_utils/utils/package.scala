@@ -1,6 +1,6 @@
-package scala_utils.utils
+package scala_utils
 
-object utils {
+package object utils {
   type Of [A [_], B] = A [B]
   type Array_int = Array [Int]
   type Array_float = Array [Float]

@@ -1,7 +1,7 @@
 package scala_utils.channel
 
 import scala_utils.serialization.{Reader, Writer}
-import scala_utils.utils.utils._
+import scala_utils.utils.Of
 
 import scala.util.Try
 

@@ -71,8 +71,12 @@ class Knob (var range : Range_double,
   }
 
   def set_value (v : Double) = {
-    value = v
+    set_value_without_callback(v)
     action (v)
+  }
+
+  def set_value_without_callback (v : Double) = {
+    value = v
     repaint ()
   }
 

@@ -2,7 +2,7 @@ package scala_utils.serialization
 
 import java.io.{IOException, InputStream, OutputStream}
 
-import scala_utils.utils.utils.Of
+import scala_utils.utils.Of
 
 object java_stream {
   implicit val byte_writer = new Writer [OutputStream, Byte] {
@@ -10,12 +10,7 @@ object java_stream {
   }
 
   implicit def byte_array_writer (implicit w : Writer [OutputStream, Int]) = new Writer [OutputStream, Array Of Byte] {
-    override def write (b : OutputStream, t : Array [Byte]) = {
-      w.write (b, t.length)
-
-      if (b.write (t) != t.length)
-        throw new IOException ("Write failed!")
-    }
+    override def write (b : OutputStream, t : Array [Byte]) = w.write (b, t.length)
   }
 
   implicit val byte_reader = new Reader [InputStream, Byte] {

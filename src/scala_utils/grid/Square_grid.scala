@@ -10,10 +10,10 @@ class Square_grid [T] (val size : Point_2I, use_manhattan_distance : Boolean, f 
   private val _cells = ArrayBuffer.tabulate (size.area)(i => f (Point_2 (i % size.x, i / size.x)))
 
   override def distance (p1 : Point_2I, p2 : Point_2I) =
-    if (use_manhattan_distance) p1 manhattan_distance p2 else p1 max_xy_distance  p2
+    if (use_manhattan_distance) p1 manhattan_distance p2 else p1 max_xy_distance p2
 
   override def apply (p : Point_2I) =
-    if (Range (Point_2I.zero, size)(p))
+    if (Range (Point_2I.zero, size).apply (p))
       None
     else
       Option (unsafe_get (p))

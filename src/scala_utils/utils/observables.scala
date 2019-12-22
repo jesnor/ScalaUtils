@@ -1,63 +1,46 @@
 package scala_utils.utils
 
-import java.util
-
-import scala_utils.utils.utils.Of
-
 object observables {
   type Observer [-T] = T => Unit
 
   trait Observable [T] {
-    def add_observer (observer : Observer Of T)
-    def remove_observer (observer : Observer Of T)
-  }
+    def add_observer (observer : Observer Of T) : Observer Of T
+    def remove_observer (observer : Observer Of T) : Boolean
 
-  class Observer_manager {
-    private val observers = new util.HashSet [Observer Of _]
-
-    def add_observer [T] (obs : Observable [T], observer : Observer Of T) = {
-      obs.add_observer (observer)
-      observers.add (observer)
-    }
-
-    def remove_observer [T] (obs : Observable [T], observer : Observer Of T) = {
-      obs.remove_observer (observer)
-      observers.remove (obs)
+    def now_and_on_change (f : => Unit) : Observer Of T = {
+      f
+      add_observer (_ => f)
     }
   }
 
-  case class Value_change [T] (old_value : T, new_value : T)
-
-  trait Value [T] {
-    def apply () : T
+  class CObservable [T] extends Protected_weak_set [Observer Of T] with Observable [T] {
+    override def add_observer (observer : Observer Of T) = add (observer)
+    override def remove_observer (observer : Observer Of T) = remove (observer)
+    protected def fireChange (v : T) : Unit = foreach (_ (v))
   }
 
-  abstract class ObservableValue [T] extends Protected_weak_set [Observer Of (Value_change Of T)] with Value [T] with Observable [Value_change Of T] {
-    override def add_observer (observer : Observer Of (Value_change Of T)) = add (observer)
-    override def remove_observer (observer : Observer Of (Value_change Of T)) = remove (observer)
+  case class Value_change [+T] (old_value : T, new_value : T)
+  trait Observable_value [T] extends Value [T] with Observable [Value_change Of T]
+  trait Observable_var [T] extends Observable_value [T] with Var [T]
 
-    protected def fireChange (oldValue : T, newValue : T) = {
-      val vc = Value_change (oldValue, newValue)
-      foreach (obs => obs (vc))
-    }
-  }
+  abstract class CObservable_value [T] extends CObservable [Value_change Of T] with Observable_value [T]
 
-  trait Var [T] {
-    def apply (value : T)
-  }
-
-  abstract class ObservableVar [T] extends ObservableValue [T] with Var [T] {}
-
-  def observableVar [T] (v : T) = new ObservableVar [T] {
-    private var value = v
+  class CObservable_var [T] (v : T) extends CObservable_value [T] with Observable_var [T] {
+    private var value : T = v
     override def apply () : T = value
 
-    override def apply (v : T) : Unit = {
+    override def update (v : T) : Unit = {
       if (v != value) {
         val oldValue = value
         value = v
-        fireChange (oldValue, v)
+        val change = Value_change (oldValue, v)
+        fireChange (change)
+        updated (change)
       }
     }
+
+    protected def updated (vc : Value_change [T]) = {}
   }
+
+  def observableVar [T] (v : T) : Observable_var [T] = new CObservable_var [T](v)
 }
