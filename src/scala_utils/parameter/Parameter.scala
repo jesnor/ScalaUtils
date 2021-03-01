@@ -9,7 +9,8 @@ class Parameter [T] (val group : Parameter_group,
                      val default : T,
                      val valid_values : Set Of T) extends CObservable_var (default) {
   def value_string (v : T) : String = v match {
-    case _: Float | _: Double => v.formatted("%.2f")
+    case f: Float => f.formatted("%.2f")
+    case d: Double => d.formatted("%.2f")
     case _ => v.toString
   }
 
