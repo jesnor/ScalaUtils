@@ -37,7 +37,7 @@ class Parameter_group (val name : String) extends CObservable [Parameter_change 
   }
 
   def param_changed (pc : Parameter_change [_]) : Unit = {
-    fireChange (pc)
+    fire_change (pc)
     parent.foreach (_ param_changed pc)
   }
 }

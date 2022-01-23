@@ -8,16 +8,16 @@ import java.lang.ref.WeakReference
  * Mainly used as base class for observables
  */
 class Protected_weak_set [T] {
-  private var entries : Any = _
+  private var entries: Any = _
 
-  protected def add (value : T) : T = {
+  protected def add (value: T): T = {
     val w = new WeakReference (value)
 
     entries = entries match {
       case null => w
-      case wr : WeakReference [T] => if (wr.get == null) w else Array (w, wr, null, null)
+      case wr: WeakReference [T] => if (wr.get == null) w else Array (w, wr, null, null)
 
-      case a : Array [WeakReference [T]] =>
+      case a: Array [WeakReference [T]] =>
         // Find empty entry
         for (i <- a.indices) {
           if (a (i) == null || a (i).get == null) {
@@ -35,12 +35,12 @@ class Protected_weak_set [T] {
     value
   }
 
-  protected def remove (value : T) : Boolean = entries match {
+  protected def remove (value: T): Boolean = entries match {
     case null =>
       entries = null
       false
 
-    case wr : WeakReference [T] => wr.get match {
+    case wr: WeakReference [T] => wr.get match {
       case null =>
         entries = null
         false
@@ -54,7 +54,7 @@ class Protected_weak_set [T] {
         false
     }
 
-    case a : Array [WeakReference [T]] =>
+    case a: Array [WeakReference [T]] =>
       var count = 0
       var lastIndex = -1
       var rv = false
@@ -104,8 +104,8 @@ class Protected_weak_set [T] {
       rv
   }
 
-  protected def foreach (action : T => Unit) : Unit = {
-    def doWith (wr : WeakReference [T]) = {
+  protected def foreach_listener (action: T => Unit): Unit = {
+    def doWith (wr: WeakReference [T]) = {
       val value = wr.get
 
       if (value != null)
@@ -114,8 +114,8 @@ class Protected_weak_set [T] {
 
     entries match {
       case null =>
-      case wr : WeakReference [T] => doWith (wr)
-      case a : Array [WeakReference [T]] => a.foreach (doWith)
+      case wr: WeakReference [T] => doWith (wr)
+      case a: Array [WeakReference [T]] => a.foreach (doWith)
     }
   }
 }
