@@ -1,5 +1,5 @@
 package scala_utils.channel
 
 trait Disposable {
-  def dispose ()
+  def dispose (): Unit
 }
