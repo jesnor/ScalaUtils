@@ -1,31 +1,31 @@
 package scala_utils.swing
 
-import java.awt.{Color, Toolkit}
+import scala_utils.math.{Point_2, Point_2F}
 
+import java.awt.{Color, Toolkit}
 import javax.swing.UIManager
 import javax.swing.border.{CompoundBorder, EmptyBorder, LineBorder, MatteBorder}
-import scala_utils.math.{Point_2, Point_2F, Range_double}
-
+import scala.language.implicitConversions
 import scala.swing.event.{ButtonClicked, ValueChanged}
-import scala.swing.{Action, Alignment, BorderPanel, BoxPanel, Button, CheckBox, Component, Dimension, FlowPanel, Graphics2D, GridBagPanel, Label, MainFrame, Orientation, Panel, Point, Slider, ToggleButton}
+import scala.swing.{Action, Alignment, BorderPanel, BoxPanel, Button, CheckBox, Component, Dimension, FlowPanel, Graphics2D, Label, MainFrame, Orientation, Panel, Point, Slider, SplitPane, ToggleButton}
 
 object utils {
   val title_border = new CompoundBorder (new MatteBorder (0, 0, 1, 0, Color.BLACK), new EmptyBorder (2, 4, 2, 4))
 
-  def label (text : String) = new Label (text)
+  def label (text: String) = new Label (text)
 
-  def set_bold (c : Component) =
+  def set_bold (c: Component) =
     c.font = c.font.deriveFont (java.awt.Font.BOLD, c.font.getSize)
 
-  def title_label (text : String) = new Label (text) {
+  def title_label (text: String) = new Label (text) {
     set_bold (this)
   }
 
-  def button (text : String, action : () => Unit) = new Button (new Action (text) {
-    override def apply () : Unit = action ()
+  def button (text: String, action: () => Unit) = new Button (new Action (text) {
+    override def apply (): Unit = action ()
   })
 
-  def slider (min : Int, max : Int, value : Int, action : Int => Unit) = {
+  def slider (min: Int, max: Int, value: Int, action: Int => Unit) = {
     val s = new Slider
     s.min = min
     s.max = max
@@ -40,7 +40,7 @@ object utils {
     s
   }
 
-  def toggle_button (text : String, s : Boolean, a : Boolean => Unit) = new ToggleButton (text) {
+  def toggle_button (text: String, s: Boolean, a: Boolean => Unit) = new ToggleButton (text) {
     selected = s
 
     reactions += {
@@ -48,7 +48,7 @@ object utils {
     }
   }
 
-  def check_box (text : String, s : Boolean, a : Boolean => Unit) = new CheckBox (text) {
+  def check_box (text: String, s: Boolean, a: Boolean => Unit) = new CheckBox (text) {
     reactions += {
       case ButtonClicked (_) => a (selected)
     }
@@ -56,33 +56,33 @@ object utils {
     selected = s
   }
 
-  def box (o : Orientation.Value, children : Component*) = new BoxPanel (o) {
+  def box (o: Orientation.Value, children: Component*) = new BoxPanel (o) {
     contents.appendAll (children)
   }
 
-  def boxs (o : Orientation.Value, children : IterableOnce [Component]) = new BoxPanel (o) {
+  def boxs (o: Orientation.Value, children: IterableOnce [Component]) = new BoxPanel (o) {
     contents.appendAll (children)
   }
 
-  def aspect_ratio_panel (aspect : Float, pos_weight : Point_2F, child : Component) = new Panel {
+  def aspect_ratio_panel (aspect: Float, pos_weight: Point_2F, child: Component) = new Panel {
     peer.add (child.peer)
     peer.setLayout (new Aspect_ratio_layout (aspect, pos_weight))
   }
 
-  def vbox (children : Component*) = box (Orientation.Vertical, children : _*)
-  def hbox (children : Component*) = box (Orientation.Horizontal, children : _*)
-  def vboxs (children : IterableOnce [Component]) = boxs (Orientation.Vertical, children)
-  def hboxs (children : IterableOnce [Component]) = boxs (Orientation.Horizontal, children)
+  def vbox (children: Component*) = box (Orientation.Vertical, children: _*)
+  def hbox (children: Component*) = box (Orientation.Horizontal, children: _*)
+  def vboxs (children: IterableOnce [Component]) = boxs (Orientation.Vertical, children)
+  def hboxs (children: IterableOnce [Component]) = boxs (Orientation.Horizontal, children)
 
-  def flow_panel (children : Component*) = new FlowPanel {
+  def flow_panel (children: Component*) = new FlowPanel {
     contents.appendAll (children)
   }
 
-  def flow_panel_s (children : IterableOnce [Component]) = new FlowPanel {
+  def flow_panel_s (children: IterableOnce [Component]) = new FlowPanel {
     contents.appendAll (children)
   }
 
-  def main_frame (name : String, s : Dimension, child : Component) = new MainFrame () {
+  def main_frame (name: String, s: Dimension, child: Component) = new MainFrame () {
     title = name
     contents = child
 
@@ -91,12 +91,12 @@ object utils {
     location = new Point (((dimension.getWidth - s.width) / 2).toInt, ((dimension.getHeight - s.height) / 2).toInt)
   }
 
-  def top_center_panel (top : Component, center : Component) : Panel = new BorderPanel {
+  def top_center_panel (top: Component, center: Component): Panel = new BorderPanel {
     add (top, BorderPanel.Position.North)
     add (center, BorderPanel.Position.Center)
   }
 
-  def titled_panel (top : Component, center : Component) : Panel = {
+  def titled_panel (top: Component, center: Component): Panel = {
     set_bold (top)
 
     val p = top_center_panel (new BorderPanel {
@@ -109,23 +109,28 @@ object utils {
     p
   }
 
-  def titled_panel (title : String, center : Component) : Panel = titled_panel (label (title), center)
+  def titled_panel (title: String, center: Component): Panel = titled_panel (label (title), center)
 
-  case class Dimension_ops (d : Dimension) extends AnyVal {
+  def split_pane (o: Orientation.Value, left: Component, right: Component, divider_location: Double): SplitPane =
+    new SplitPane (o, left, right) {
+      dividerLocation = divider_location
+    }
+
+  case class Dimension_ops (d: Dimension) extends AnyVal {
     def to_point = Point_2 (d.width, d.height)
   }
 
-  implicit def dimension_ops (d : Dimension) : Dimension_ops = Dimension_ops (d)
+  implicit def dimension_ops (d: Dimension): Dimension_ops = Dimension_ops (d)
 
-  def set_look_and_feel (name : String) : Unit =
+  def set_look_and_feel (name: String): Unit =
     for (info <- UIManager.getInstalledLookAndFeels) {
       if (name == info.getName)
         UIManager.setLookAndFeel (info.getClassName)
     }
 
-  def set_nimbus_look_and_feel () : Unit = set_look_and_feel ("Nimbus")
+  def set_nimbus_look_and_feel (): Unit = set_look_and_feel ("Nimbus")
 
-  def slider_with_label (min : Int, max : Int, value : Int, action : Int => Unit) = {
+  def slider_with_label (min: Int, max: Int, value: Int, action: Int => Unit) = {
     val l = label (value.toString)
     l.preferredSize = new Dimension (70, 0)
     l.horizontalAlignment = Alignment.Right
@@ -138,8 +143,8 @@ object utils {
     Seq (s, l)
   }
 
-  def draw_string (g : Graphics2D, text : String, x : Double, y : Double, anchor_x : Double = 0,
-                   anchor_y : Double = 0) = {
+  def draw_string (g: Graphics2D, text: String, x: Double, y: Double, anchor_x: Double = 0,
+                   anchor_y: Double = 0) = {
     val b = g.getFontMetrics.getStringBounds (text, g)
 
     g.drawString (text,
